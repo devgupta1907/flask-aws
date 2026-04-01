@@ -1,0 +1,86 @@
+{% extends 'base.html' %} 
+
+{% block pageTitle %} Professional {% endblock %}
+
+{% block content %}
+
+  <div class="container mt-4">
+    <h3 class="text-center display-6 my-2">{{ professional.name }}
+    </h3>
+    <div class="row">
+      <div class="text-center">
+        <p class="lead">{{ professional.service.name }} Professional </p>
+        <p class="lead">
+          <a href="{{ url_for('admin.get_professional_resume', filename=professional.resume) }}" class="btn badge text-bg-primary" target="_blank">See Your Resume</a> |
+          {% if professional.status == professional_status.ACTIVE %}
+            {% set spanClass = "text-bg-success" %} 
+          {% elif professional.status == professional_status.PENDING %}
+            {% set spanClass = "text-bg-warning" %}
+          {% elif professional.status == professional_status.BLOCKED %}
+            {% set spanClass = "text-bg-danger" %}
+          {% endif %}
+          <span class="badge {{ spanClass }}">Status - {{ professional.status.value }} </span> |
+          {% if professional.rating == 0 %}
+            {% set badgeClass = "text-bg-secondary" %}
+          {% elif 0 < professional.rating < 2.6 %}
+            {% set badgeClass = "text-bg-danger" %}
+          {% elif 2.6 <= professional.rating < 4.1 %}
+            {% set badgeClass = "text-bg-warning" %}
+          {% elif 4.1 <= professional.rating <= 5 %}
+            {% set badgeClass = "text-bg-success" %}
+          {% endif %}
+          <span class="badge {{ badgeClass }}">Rating {{ professional.rating }} </span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <p class="lead">- Service Request History</p>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Customer Name</th>
+          <th scope="col">Status</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        
+        {% for request in service_requests %}
+        <tr>
+          <th scope="row">{{ request.id }}</th>
+          <td>{{ request.customer.name }}</td>
+          <td>{{ request.status.value }}</td>
+          <td>
+            <div>
+              {% if request.status == request_status.REQUESTED %}
+                <form action="{{ url_for('professional.accept_request', request_id=request.id) }}" method="POST" class="d-inline">
+                  <button type="submit" class="btn btn-info">Accept</button>
+                </form>
+
+                <form action="{{ url_for('professional.reject_request', request_id=request.id) }}" method="POST" class="d-inline">
+                  <button type="submit" class="btn btn-danger">Reject</button>
+                </form>
+
+              {% elif request.status == request_status.ACCEPTED %}
+                <form action="{{ url_for('professional.reject_request', request_id=request.id) }}" method="POST" class="d-inline">
+                  <button type="submit" class="btn btn-danger">Reject</button>
+                </form>
+
+              {% else %}
+                <span>No further actions available</span>
+              {% endif %}
+
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+
+      </tbody>
+    </table>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'base_registration.html' %}
+
+{% block title %}
+    <div class="container mt-4">
+        <h3 class="text-center display-5 my-2">MadyPro Professionals Registration Page</h3>
+        <div class="row">
+            <div class="text-center">
+                <p class="lead">Create Your Account To Work As A Professional</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block form %}
+
+    <div class="container mt-3">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form action="{{ url_for('auth.professional_register') }}" method="POST" enctype="multipart/form-data">
+
+                    <div class="mb-3">
+                        <label for="professionalName" class="form-label">Your Name</label>
+                        <input type="text" class="form-control" id="professionalName" name="professionalName" required>
+                      
+                    	<div id="nameHelp" class="form-text">Please enter your full name here.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="professionalEmail" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="professionalEmail" name="professionalEmail" required>
+                        <div id="emailHelp" class="form-text">This email will be required for login.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="professionalPassword" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="professionalPassword" name="professionalPassword" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="professionalExp" class="form-label">Work Experience (in years)</label>
+                        <input type="number" class="form-control" id="professionalExp" name="professionalExp" min="0" max="40" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="professionalResume" class="form-label">Resume</label>
+                        <input type="file" class="form-control" id="professionalResume" name="professionalResume" accept="application/pdf" required>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label for="professionalService" class="form-label">Your Service</label>
+                        <select class="form-select" id="professionalService" name="professionalService" required>
+                            {% for service in services %}
+                                <option value="{{ service.id }}">{{ service.name }} | &#8377;{{ service.price }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-warning">Register</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

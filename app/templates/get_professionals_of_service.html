@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block pageTitle %} Professionals {% endblock %}
+
+{% block content %}
+
+    <div class="container mt-4">
+        <h3 class="text-center display-5 my-2">{{ service.name }}</h3>
+        <div class="row">
+            <div class="text-center">
+                <p class="lead">{{ service.description.title() }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <p class="lead">- found <b>{{ desired_professionals|length }}</b> professional(s)</p>
+        <div class="row">
+            {% for professional in desired_professionals %}
+            <div class="col-md-3 mb-4">
+                <div class="card border border-0">
+                    <div class="card-body shadow rounded">
+                        <h5 class="card-title text-center">{{ professional.name }}</h5>
+                        <p class="card-text text-center">{{ professional.service.name }}</p>
+                        <p class="card-text text-center">
+                            {% if professional.rating == 0 %}
+                                Be the first to hire this professional
+                            {% else %}
+                                {{ "💛" * professional.rating|round|int }}
+                            {% endif %}
+                        </p>
+                        <div class="text-center">
+                            <form action="{{ url_for('customer.create_service_request', service_id=professional.service_id, professional_id=professional.id) }}" method="POST">
+                                <button type="submit" class="btn btn-warning">Book Professional</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}

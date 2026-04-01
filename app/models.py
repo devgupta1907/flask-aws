@@ -1,0 +1,119 @@
+from werkzeug.security import generate_password_hash
+from flask_login import UserMixin
+from app import db
+from app.enums import CustomerStatus, ProfessionalStatus, ServiceRequestStatus
+
+
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
+    services = db.relationship('Service', backref='category', lazy=True)
+
+    def __repr__(self):
+        return f"<Category {self.name}>"
+
+
+
+class Service(db.Model):
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+    price = db.Column(db.Integer, nullable=False)
+    description = db.Column(db.Text)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+    professionals = db.relationship('Professional', backref='service', lazy=True)
+    service_requests = db.relationship('ServiceRequest', backref='service', lazy=True)
+    
+    def __repr__(self):
+        return f"<Service {self.name}>"
+
+
+class ServiceRequest(db.Model):
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    service_id = db.Column(db.Integer, db.ForeignKey('service.id'), nullable=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
+    professional_id = db.Column(db.Integer, db.ForeignKey('professional.id'), nullable=False)
+    status = db.Column(db.Enum(ServiceRequestStatus), default=ServiceRequestStatus.REQUESTED, nullable=False)
+    rating = db.Column(db.Integer, nullable=True)
+    
+    def __repr__(self):
+        return f"<ServiceRequest {self.id}>"
+    
+    
+class Customer(UserMixin, db.Model):
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    name = db.Column(db.String(80), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(120), nullable=False)
+    pincode = db.Column(db.Integer, nullable=False)
+    status = db.Column(db.Enum(CustomerStatus), default=CustomerStatus.ACTIVE, nullable=False)
+    service_requests = db.relationship('ServiceRequest', backref='customer', lazy=True)
+    
+    def get_id(self):
+        return f"c_{self.id}"
+    
+    def __repr__(self):
+        return f"<Customer {self.email}>"
+    
+    def set_password(self, password):
+        if password:
+            self.password = generate_password_hash(password)
+        else:
+            raise ValueError("Password cannot be None or empty")
+    
+    
+class Professional(UserMixin, db.Model):
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    name = db.Column(db.String(80), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(120), nullable=False)
+    work_exp = db.Column(db.Integer, nullable=False)
+    resume = db.Column(db.String(200), nullable=False)
+    service_id = db.Column(db.Integer, db.ForeignKey('service.id'), nullable=False)
+    service_requests = db.relationship('ServiceRequest', backref='professional', lazy=True)
+    status = db.Column(db.Enum(ProfessionalStatus), default=ProfessionalStatus.PENDING, nullable=False)
+    
+    
+    def get_id(self):
+        return f"p_{self.id}"
+    
+    def __repr__(self):
+        return f'<Professional {self.name}>'
+    
+    @property
+    def rating(self):
+        total_services = 0
+        total_ratings = 0
+        for request in self.service_requests:
+            if request.rating is not None and request.status != ServiceRequestStatus.REQUESTED:
+                total_ratings += request.rating
+                total_services += 1
+                
+        if total_services > 0:
+            return round(total_ratings / total_services, 1)
+        return 0
+    
+    
+    def set_password(self, password):
+        if password:
+            self.password = generate_password_hash(password)
+        else:
+            raise ValueError("Password cannot be None or empty")
+    
+    
+class Admin(UserMixin, db.Model):
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    name = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(120), nullable=False)
+    
+    def get_id(self):
+        return f"a_{self.id}"
+    
+    def __repr__(self):
+        return f'<Admin {self.name}>'
+    
+    def set_password(self, password):
+        if password:
+            self.password = generate_password_hash(password)
+        else:
+            raise ValueError("Password cannot be None or empty")
