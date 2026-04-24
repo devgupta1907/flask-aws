@@ -15,7 +15,7 @@
     </div>
 
     <div class="container mt-4">
-        <form action="{{ url_for('admin_services') }}" method="GET" class="d-flex justify-content-center mb-4 d-inline">
+        <form action="{{ url_for('admin.admin_services') }}" method="GET" class="d-flex justify-content-center mb-4 d-inline">
             <input type="text" name="keyword" placeholder="Search for service..." class="form-control w-50" required>
             <button type="submit" class="btn btn-warning ms-2">Search</button>
         </form>
@@ -45,11 +45,11 @@
                     <td>{{ service.professionals|length }}</td>
                     <td>
                         <div>
-                            <form action="{{ url_for('update_service', service_id=service.id) }}" class="d-inline">
+                            <form action="{{ url_for('admin.update_service', service_id=service.id) }}" class="d-inline">
                                 <button type="submit" class="btn btn-info">Edit</button>
                             </form>
                             {% if service.professionals|length == 0 %}
-                            <form action="{{ url_for('delete_service', service_id=service.id) }}" method="POST" class="d-inline">
+                            <form action="{{ url_for('admin.delete_service', service_id=service.id) }}" method="POST" class="d-inline">
                                 <button type="submit" class="btn btn-danger">Delete</button>
                             </form>
                             {% endif %}
