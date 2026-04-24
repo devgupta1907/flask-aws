@@ -104,7 +104,7 @@ class Admin(UserMixin, db.Model):
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(80), unique=True, nullable=False)
-    password = db.Column(db.String(120), nullable=False)
+    password = db.Column(db.String(200), nullable=False)
     
     def get_id(self):
         return f"a_{self.id}"
