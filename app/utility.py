@@ -32,7 +32,7 @@ def admin_login_required(f):
 
         if not current_user.get_id().startswith('a_'):
             flash('Access Denied! You Are Not Allowed To Access This Page', 'danger')
-            return redirect(url_for('home'))
+            return redirect(url_for('main.home'))
         
         return f(*args, **kwargs)
     return decorated_function
@@ -48,7 +48,7 @@ def professional_login_required(f):
 
         if not current_user.get_id().startswith('p_'):
             flash('Access Denied! You Are Not Allowed To Access This Page', 'danger')
-            return redirect(url_for('home'))
+            return redirect(url_for('main.home'))
         
         return f(*args, **kwargs)
     return decorated_function
@@ -64,7 +64,7 @@ def customer_login_required(f):
 
         elif not current_user.get_id().startswith('c_'):
             flash('Access Denied! You Are Not Allowed To Access This Page', 'danger')
-            return redirect(url_for('home'))          
+            return redirect(url_for('main.home'))          
         
         return f(*args, **kwargs)
     return decorated_function
